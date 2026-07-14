@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mapkit"
+version = "0.1.0"
+description = "Composable CSV mapping and validation for Luigi pipelines"
+readme = "README.md"
+requires-python = ">=3.13"
+keywords = ["csv", "etl", "luigi", "mapping", "validation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+dependencies = [
+    "luigi>=3.6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+mapkit = ["py.typed"]

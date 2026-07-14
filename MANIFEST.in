@@ -1,0 +1,3 @@
+include CONTRIBUTING.md
+graft docs
+global-exclude __pycache__ *.py[cod]
