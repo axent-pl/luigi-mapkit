@@ -1,21 +1,21 @@
 import unittest
 
-from mapkit import parse_date, parse_decimal
+from mapkit import date_parser, parse_date, parse_decimal
 
 
 class ParseDateTests(unittest.TestCase):
     def test_date_formats(self) -> None:
         cases = {
             "2024-01-15": "2024-01-15",
-            "2024-01-15 14:30:45": "2024-01-15T14:30:45",
-            "2024-01-15 14:30:45.123456": "2024-01-15T14:30:45.123456",
-            "2024-01-15T14:30:45": "2024-01-15T14:30:45",
-            "2024-01-15T14:30:45.123456": "2024-01-15T14:30:45.123456",
-            "2024-01-15T14:30:45+0200": "2024-01-15T14:30:45+02:00",
-            "2024-01-15T14:30:45+02:00": "2024-01-15T14:30:45+02:00",
+            "2024-01-15 14:30:45": "2024-01-15",
+            "2024-01-15 14:30:45.123456": "2024-01-15",
+            "2024-01-15T14:30:45": "2024-01-15",
+            "2024-01-15T14:30:45.123456": "2024-01-15",
+            "2024-01-15T14:30:45+0200": "2024-01-15",
+            "2024-01-15T14:30:45+02:00": "2024-01-15",
             "15.01.2024": "2024-01-15",
-            "15.01.2024 14:30:45": "2024-01-15T14:30:45",
-            "15.01.2024 14:30": "2024-01-15T14:30:00",
+            "15.01.2024 14:30:45": "2024-01-15",
+            "15.01.2024 14:30": "2024-01-15",
             "2024/01/15": "2024-01-15",
             "15/01/2024": "2024-01-15",
             "01/15/2024": "2024-01-15",
@@ -25,6 +25,11 @@ class ParseDateTests(unittest.TestCase):
         for value, expected in cases.items():
             with self.subTest(value=value):
                 self.assertEqual(parse_date(value), expected)
+
+    def test_output_format_factory(self) -> None:
+        parser = date_parser("%d/%m/%Y")
+        self.assertEqual(parser("2024-01-15"), "15/01/2024")
+        self.assertEqual(parser("15.01.2024"), "15/01/2024")
 
     def test_invalid_values(self) -> None:
         values = (

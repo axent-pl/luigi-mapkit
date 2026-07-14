@@ -13,7 +13,7 @@ from .mappers import (
     is_required,
     transform,
 )
-from .parsers import parse_date, parse_decimal
+from .parsers import date_parser, parse_date, parse_decimal
 from .processor import process_data
 
 __version__ = "0.1.0"
@@ -31,6 +31,7 @@ __all__ = [
     "fallback",
     "is_one_of",
     "is_required",
+    "date_parser",
     "parse_date",
     "parse_decimal",
     "process_data",

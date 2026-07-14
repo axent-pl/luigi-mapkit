@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from typing import Callable
 
 _DATE_TOKEN_FORMATS = [
     # ISO
@@ -24,36 +25,38 @@ _DATE_TOKEN_FORMATS = [
 ]
 
 
-def parse_date(value: str) -> str:
-    """Parse a date string and return it in ISO format."""
-    if value is None:
-        raise ValueError("value is empty")
+def date_parser(output_format: str = "%Y-%m-%d") -> Callable[[str], str]:
+    """Return a parser that formats parsed dates using the requested output format."""
 
-    value = value.strip()
-    if not value:
-        raise ValueError("value is empty")
+    def parser(value: str) -> str:
+        if value is None:
+            raise ValueError("value is empty")
 
-    for fmt in _DATE_TOKEN_FORMATS:
+        value = value.strip()
+        if not value:
+            raise ValueError("value is empty")
+
+        for fmt in _DATE_TOKEN_FORMATS:
+            try:
+                parsed = datetime.strptime(value, fmt)
+            except ValueError:
+                continue
+
+            return parsed.strftime(output_format)
+
         try:
-            parsed = datetime.strptime(value, fmt)
-        except ValueError:
-            continue
+            parsed = datetime.fromisoformat(value)
+        except ValueError as exc:
+            raise ValueError(f"could not parse {value!r} as a date") from exc
 
-        return _normalize_parsed_datetime(parsed)
+        return parsed.strftime(output_format)
 
-    try:
-        parsed = datetime.fromisoformat(value)
-    except ValueError as exc:
-        raise ValueError(f"could not parse {value!r} as a date") from exc
-
-    return _normalize_parsed_datetime(parsed)
+    return parser
 
 
-def _normalize_parsed_datetime(parsed: datetime) -> str:
-    if parsed.time() == datetime.min.time():
-        return parsed.date().isoformat()
-
-    return parsed.isoformat()
+def parse_date(value: str) -> str:
+    """Parse a date string and return it in the default YYYY-MM-DD format."""
+    return date_parser()(value)
 
 
 def parse_decimal(value: str) -> str:
