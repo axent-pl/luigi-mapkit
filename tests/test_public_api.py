@@ -12,6 +12,9 @@ class PublicApiTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertTrue(hasattr(mapkit, name))
 
+    def test_converter_api_is_exposed(self) -> None:
+        self.assertTrue(hasattr(mapkit, "convert"))
+
     def test_renamed_and_removed_api(self) -> None:
         for name in ("column_value", "is_one_of", "is_required", "parse_decimal"):
             with self.subTest(name=name):

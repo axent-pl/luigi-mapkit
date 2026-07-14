@@ -15,11 +15,13 @@ from .mappers import (
 )
 from .parsers import date_parser, parse_date, parse_decimal
 from .processor import process_data
+from .converter import convert
 
 __version__ = "0.1.0"
 
 __all__ = [
     "InvalidInputValue",
+    "convert",
     "Mapper",
     "MappingError",
     "MissingInputColumn",
