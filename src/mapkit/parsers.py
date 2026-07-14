@@ -1,6 +1,59 @@
 """Value parsers for use with mapper transformations."""
 
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
+
+_DATE_TOKEN_FORMATS = [
+    # ISO
+    "%Y-%m-%d",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M:%S.%f",
+    "%Y-%m-%dT%H:%M:%S",
+    "%Y-%m-%dT%H:%M:%S.%f",
+    "%Y-%m-%dT%H:%M:%S%z",
+    # European
+    "%d.%m.%Y",
+    "%d.%m.%Y %H:%M:%S",
+    "%d.%m.%Y %H:%M",
+    # Slash variants
+    "%Y/%m/%d",
+    "%d/%m/%Y",
+    "%m/%d/%Y",
+    # Compact
+    "%Y%m%d",
+]
+
+
+def parse_date(value: str) -> str:
+    """Parse a date string and return it in ISO format."""
+    if value is None:
+        raise ValueError("value is empty")
+
+    value = value.strip()
+    if not value:
+        raise ValueError("value is empty")
+
+    for fmt in _DATE_TOKEN_FORMATS:
+        try:
+            parsed = datetime.strptime(value, fmt)
+        except ValueError:
+            continue
+
+        return _normalize_parsed_datetime(parsed)
+
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"could not parse {value!r} as a date") from exc
+
+    return _normalize_parsed_datetime(parsed)
+
+
+def _normalize_parsed_datetime(parsed: datetime) -> str:
+    if parsed.time() == datetime.min.time():
+        return parsed.date().isoformat()
+
+    return parsed.isoformat()
 
 
 def parse_decimal(value: str) -> str:

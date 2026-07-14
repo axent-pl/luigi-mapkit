@@ -1,6 +1,45 @@
 import unittest
 
-from mapkit import parse_decimal
+from mapkit import parse_date, parse_decimal
+
+
+class ParseDateTests(unittest.TestCase):
+    def test_date_formats(self) -> None:
+        cases = {
+            "2024-01-15": "2024-01-15",
+            "2024-01-15 14:30:45": "2024-01-15T14:30:45",
+            "2024-01-15 14:30:45.123456": "2024-01-15T14:30:45.123456",
+            "2024-01-15T14:30:45": "2024-01-15T14:30:45",
+            "2024-01-15T14:30:45.123456": "2024-01-15T14:30:45.123456",
+            "2024-01-15T14:30:45+0200": "2024-01-15T14:30:45+02:00",
+            "2024-01-15T14:30:45+02:00": "2024-01-15T14:30:45+02:00",
+            "15.01.2024": "2024-01-15",
+            "15.01.2024 14:30:45": "2024-01-15T14:30:45",
+            "15.01.2024 14:30": "2024-01-15T14:30:00",
+            "2024/01/15": "2024-01-15",
+            "15/01/2024": "2024-01-15",
+            "01/15/2024": "2024-01-15",
+            "20240115": "2024-01-15",
+        }
+
+        for value, expected in cases.items():
+            with self.subTest(value=value):
+                self.assertEqual(parse_date(value), expected)
+
+    def test_invalid_values(self) -> None:
+        values = (
+            "",
+            " ",
+            "not-a-date",
+            "2024-13-01",
+            "31.02.2024",
+            "2024/13/01",
+            "20241301",
+        )
+        for value in values:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    parse_date(value)
 
 
 class ParseDecimalTests(unittest.TestCase):
